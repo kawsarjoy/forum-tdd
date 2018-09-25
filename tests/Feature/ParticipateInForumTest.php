@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class ReadThreadsTest extends TestCase
+class ParticipateInForumTest extends TestCase
 {
     use DatabaseMigrations;
 
@@ -16,30 +16,27 @@ class ReadThreadsTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-
         $this->thread = factory('App\Thread')->create();
     }
 
     /** @test */
-    public function a_user_can_view_all_threds()
-    {   
-        $this->get('/threads')
-             ->assertSee($this->thread->title);
+    public function authenticated_users_may_not_added_replies()
+    {
+        $this->expectException('Illuminate\Auth\AuthenticationException');
+
+        $this->post('threads/1/replies', []);
     }
 
-    /** @test */
-    public function a_user_can_read_a_single_thread()
-    {
-        $this->get($this->thread->path())
-             ->assertSee($this->thread->title);
-    }
 
     /** @test */
-    public function a_user_can_read_replies_that_are_associated_with_a_thread()
+    public function an_authenticated_user_may_participated_in_forum_threads()
     {
-        $reply = factory('App\Reply')
-                    ->create(['thread_id' => $this->thread->id]);
-        
+        $this->be(factory('App\User')->create());
+
+        $reply = factory('App\Reply')->make();
+
+        $this->post($this->thread->path() . '/replies', $reply->toArray());
+
         $this->get($this->thread->path())
              ->assertSee($reply->body);
     }
