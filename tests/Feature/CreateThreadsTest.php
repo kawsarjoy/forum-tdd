@@ -12,7 +12,15 @@ class CreateThreadsTest extends TestCase
     use DatabaseMigrations;
 
     /** @test */
-    public function guests_mat_not_create_threads()
+    public function guests_can_not_see_the_create_theads_page()
+    {
+        $this->withExceptionHandling()
+             ->get('/threads/create')
+             ->assertRedirect('/login');
+    }
+
+    /** @test */
+    public function guests_may_not_create_threads()
     {
         $this->expectException('Illuminate\Auth\AuthenticationException');
 
