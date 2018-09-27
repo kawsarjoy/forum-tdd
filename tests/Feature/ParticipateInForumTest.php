@@ -40,4 +40,13 @@ class ParticipateInForumTest extends TestCase
         $this->get($this->thread->path())
              ->assertSee($reply->body);
     }
+
+    /** @test */
+    function a_reply_requires_a_body()
+    {
+        $this->withExceptionHandling()->signIn();
+    
+        $this->post($this->thread->path() . '/replies', ['body' => null])
+             ->assertSessionHasErrors('body');
+    }
 }

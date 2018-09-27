@@ -55,4 +55,5 @@ class ThreadTest extends TestCase
     {
         $this->assertInstanceOf('App\Channel', $this->thread->channel);
     }
+    
 }
