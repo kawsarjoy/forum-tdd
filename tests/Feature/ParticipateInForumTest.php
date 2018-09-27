@@ -20,11 +20,11 @@ class ParticipateInForumTest extends TestCase
     }
 
     /** @test */
-    public function authenticated_users_may_not_added_replies()
+    public function unauthenticated_users_may_not_added_replies()
     {
-        $this->expectException('Illuminate\Auth\AuthenticationException');
-
-        $this->post('threads/1/replies', []);
+        $this->withExceptionHandling()
+             ->post('threads/channel-slug/1/replies', [])
+             ->assertRedirect('/login');
     }
 
 
