@@ -10,7 +10,7 @@
                 <div class="panel-body">
                     @foreach($threads as $thread)
                         <article>
-                            <div class="lavel">
+                            <div class="level">
                                 <h4 class="flex">
                                     <a href="{{ $thread->path() }}">
                                         {{ $thread->title }}

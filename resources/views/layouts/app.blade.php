@@ -21,7 +21,7 @@
 
     <style>
         body{ padding-bottom: 100px; }
-        .lavel{ display:flex; align-items:center; }
+        .level{ display:flex; align-items:center; }
         .flex{ flex:1; }
     </style>
 
