@@ -6,6 +6,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use App\Activity;
 
 class CreateThreadsTest extends TestCase
 {
@@ -83,12 +84,6 @@ class CreateThreadsTest extends TestCase
     }
 
     /** @test */
-    // function threads_my_only_be_deleted_by_those_who_have_permission()
-    // {
-        
-    // }
-
-    /** @test */
     function authorized_user_can_delete_threads()
     {
         $this->signIn();
@@ -100,6 +95,8 @@ class CreateThreadsTest extends TestCase
 
         $this->assertDatabaseMissing('threads', ['id' => $thread->id]);
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+
+        $this->assertEquals(0, Activity::count());
 
         $response->assertStatus(204);
     }
