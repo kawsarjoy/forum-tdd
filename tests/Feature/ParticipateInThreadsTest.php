@@ -51,7 +51,7 @@ class ParticipateInThreadsTest extends TestCase
     }
 
     /** @test */
-    function anauthorized_users_cannot_delete_replies()
+    function unauthorized_users_cannot_delete_replies()
     {
         $this->withExceptionHandling();
 
@@ -75,5 +75,35 @@ class ParticipateInThreadsTest extends TestCase
         $this->delete("/replies/{$reply->id}");
 
         $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+    }
+
+    /** @test */
+    function unauthorized_users_cannot_update_replies()
+    {
+        $this->withExceptionHandling();
+
+        $reply = create('App\Reply');
+
+        $this->patch("/replies/{$reply->id}")
+             ->assertRedirect('login');
+
+        $this->signIn()
+             ->patch("/replies/{$reply->id}")
+             ->assertStatus(403);
+    }
+
+    /** @test */
+    function authorized_user_can_update_replies()
+    {
+        $this->signIn();
+
+        $reply = create('App\Reply', ['user_id' => auth()->id()]);
+
+        $updatedReply = 'You have been changed, fool';
+
+        $this->patch("/replies/{$reply->id}", ['body' => $updatedReply]);
+
+        $this->assertDatabaseHas('replies', ['id' => $reply->id,'body' => $updatedReply]);
+
     }
 }
