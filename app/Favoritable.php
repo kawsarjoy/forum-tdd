@@ -4,7 +4,7 @@ namespace App;
 
 trait Favoritable
 {
-    public function bootFavoritable()
+    public static function bootFavoritable()
     {
         static::deleting(function($model){
             $model->favorites->each->delete();
