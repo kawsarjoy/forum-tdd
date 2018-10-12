@@ -9,8 +9,6 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
-Vue.config.devtools = true;
-
 window.events = new Vue();
 
 window.flash = function(message){
