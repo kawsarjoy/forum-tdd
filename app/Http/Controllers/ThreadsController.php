@@ -119,7 +119,7 @@ class ThreadsController extends Controller
         return redirect('/threads');
     }
     
-    protected function getThreads($channel, $filters)
+    protected function getThreads(Channel $channel, ThreadFilters $filters)
     {
         $threads = Thread::latest()->filter($filters);
 

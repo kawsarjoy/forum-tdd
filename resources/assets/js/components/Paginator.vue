@@ -59,7 +59,7 @@
         methods: {
 
             broadcast(){
-                
+
                 return this.$emit('changed', this.page);
             },
 
@@ -67,6 +67,11 @@
 
                 history.pushState(null, null, '?page=' + this.page);
             }
+
+            // javascript location API
+            // javascript history API
+            // javascript match()
+            // Vue watch
         }
     }
 </script>
