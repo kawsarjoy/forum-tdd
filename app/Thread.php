@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\RecordsActivity;
+use App\Events\ThreadHasNewReply;
 
 class Thread extends Model
 {
@@ -61,23 +62,22 @@ class Thread extends Model
 
         // $this->increment('replies_count');
 
-        $this->subscriptions
-             ->filter(function($sub) use ($reply){
-
-                return $sub->user_id != $reply->user_id;
-             })
-
-             ->each->notify($reply);
-
-        // foreach($this->subscriptions as $subscription)
-        // {
-        //     if($subscription->user_id != $reply->user_id)
-        //     {
-        //         $subscription->user->notify(new ThreadWasUpdated($this, $reply));
-        //     }
-        // }
+        $this->notifySubscribers($reply);
+        
+        // event(new ThreadHasNewReply($this, $reply));
 
         return $reply;
+    }
+
+    public function notifySubscribers($reply)
+    {
+        $this->subscriptions
+
+             ->where('user_id', '!=', $reply->user_id)
+
+             ->each
+
+             ->notify($reply);
     }
 
     public function scopeFilter($query, $filters)
