@@ -6,15 +6,22 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationsTest extends TestCase
 {
     use DatabaseMigrations;
 
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->signIn();
+    }
+
     /** @test */
     function a_norifications_is_prepared_when_a_subscribed_thread_receives_a_new_reply_that_not_by_a_current_user()
     {
-        $this->signIn();
 
         $thread = create('App\Thread')->subscribe();
 
@@ -40,19 +47,10 @@ class NotificationsTest extends TestCase
     /** @test */
     function a_user_can_fetch_their_unread_notifications()
     {
-        $this->signIn();
 
-        $thread = create('App\Thread')->subscribe();
+        create(DatabaseNotification::class);
 
-        $thread->addReply([
-            
-            'user_id' => create('App\User')->id,
-            'body' => 'some reply'
-        ]);
-
-        $user = auth()->user();
-        
-        $response = $this->getJson("/profiles/{$user->name}/notifications")->json();
+        $response = $this->getJson("/profiles/" . auth()->user()->name . "/notifications")->json();
 
         $this->assertCount(1, $response);
 
@@ -61,25 +59,18 @@ class NotificationsTest extends TestCase
     /** @test */
     function a_user_can_mark_a_notifications_as_read()
     {
-        $this->signIn();
 
-        $thread = create('App\Thread')->subscribe();
+        create(DatabaseNotification::class);
 
-        $thread->addReply([
+        tap(auth()->user(), function($user){
+
+            $this->assertCount(1, $user->unreadNotifications);
+
+            $this->delete("/profiles/{$user->name}/notifications/". $user->unreadNotifications->first()->id);
             
-            'user_id' => create('App\User')->id,
-            'body' => 'some reply'
-        ]);
+            $this->assertCount(0, $user->fresh()->unreadNotifications);
 
-        $user = auth()->user();
-
-        $this->assertCount(1, $user->unreadNotifications);
-
-        $notificationId = $user->unreadNotifications->first()->id;
-
-        $this->delete("/profiles/{$user->name}/notifications/{$notificationId}");
-        
-        $this->assertCount(0, $user->fresh()->unreadNotifications);
+        });
 
     }
 }
