@@ -19,8 +19,8 @@ Vue.prototype.authorize = function(handler){
 
 window.events = new Vue();
 
-window.flash = function(message){
-    window.events.$emit('flash', message);
+window.flash = function(message, lavel = 'success'){
+    window.events.$emit('flash', {message, lavel});
 };
 /**
  * Next, we will create a fresh Vue application instance and attach it to
