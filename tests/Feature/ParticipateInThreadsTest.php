@@ -115,13 +115,31 @@ class ParticipateInThreadsTest extends TestCase
         $this->be(factory('App\User')->create());
 
         $reply = factory('App\Reply')->make([
+
             'body' => 'Yahoo Customer Support'
         ]);
 
-        $this->expectException(\Exception::class);
+        $this->post($this->thread->path() . '/replies', $reply->toArray())
+             ->assertStatus(422);
 
-        $this->post($this->thread->path() . '/replies', $reply->toArray());
 
+    }
+
+    /** @test */
+    function users_may_only_reply_a_maximum_once_per_minute()
+    {
+        $this->be(factory('App\User')->create());
+
+        $reply = factory('App\Reply')->make([
+
+            'body' => 'A Simply Reply'
+        ]);
+
+        $this->post($this->thread->path() . '/replies', $reply->toArray())
+             ->assertStatus(200);
+
+        $this->post($this->thread->path() . '/replies', $reply->toArray())
+             ->assertStatus(422);
 
     }
 }
