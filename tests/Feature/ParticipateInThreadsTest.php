@@ -108,4 +108,20 @@ class ParticipateInThreadsTest extends TestCase
         $this->assertDatabaseHas('replies', ['id' => $reply->id,'body' => $updatedReply]);
 
     }
+
+    /** @test */
+    function replies_that_contain_spam_may_not_be_participated()
+    {
+        $this->be(factory('App\User')->create());
+
+        $reply = factory('App\Reply')->make([
+            'body' => 'Yahoo Customer Support'
+        ]);
+
+        $this->expectException(\Exception::class);
+
+        $this->post($this->thread->path() . '/replies', $reply->toArray());
+
+
+    }
 }
